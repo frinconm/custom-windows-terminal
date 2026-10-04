@@ -1,3 +1,18 @@
+> [!NOTE]
+> **This is an unofficial fork of [microsoft/terminal](https://github.com/microsoft/terminal).** It is not affiliated with or endorsed by Microsoft.
+
+## About this fork: sidebar + Claude Code status
+
+This fork replaces the tab strip with a **collapsible sidebar** that lists every terminal, grouped by **git repository** and then by **worktree**. It also shows the live state of **[Claude Code](https://claude.com/claude-code)** sessions running in each pane: working, waiting for your approval or answer, done, and any background tasks still running. Everything else (rendering, settings, profiles, panes, themes) is the stock Windows Terminal, based on v1.25.
+
+**Download:** grab the portable zip from [Releases](../../releases/latest), unzip it anywhere and run `WindowsTerminal.exe`. Nothing is installed: settings are kept in a `settings` folder next to the exe.
+
+**Claude Code status:** download `claude-sidebar.zip` from the same release, then run `node install.js`. This registers the Claude Code hooks that report each session's state. It also adds a few lines to your Git Bash and PowerShell 7 profiles so plain shells report their folder. Every file it changes is backed up first, and `node install.js --uninstall` reverts it. Details are in [tools/claude-sidebar](tools/claude-sidebar/README.md).
+
+`Ctrl+Shift+B` collapses the sidebar. Set `"showTabsInSidebar": false` to get the regular tabs back.
+
+---
+
 ![terminal-logos](https://github.com/microsoft/terminal/assets/91625426/333ddc76-8ab2-4eb4-a8c0-4d7b953b1179)
 
 [![Terminal Build Status](https://dev.azure.com/shine-oss/terminal/_apis/build/status%2FTerminal%20CI?branchName=main)](https://dev.azure.com/shine-oss/terminal/_build/latest?definitionId=1&branchName=main)
