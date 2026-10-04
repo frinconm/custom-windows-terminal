@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)common.build.post.props" />
+
+  <!--
+    The XAML compiler in Windows SDK 10.0.26100 crashes with
+    "WMC9999: Value cannot be null. Parameter name: name" on any page without an
+    x:Class (e.g. a plain ResourceDictionary) whenever it is handed the merged
+    C++/WinRT winmd: CheckIsHybridCppWinRTCx calls GetType(null). That winmd is only
+    used to detect C++/CX + C++/WinRT hybrid projects, which we are not, so drop it.
+  -->
+  <Target Name="_WtDropXamlCppWinRTLocalAssembly" AfterTargets="XamlAddCppWinRTMergedWinmd">
+    <ItemGroup>
+      <XamlCppWinRTLocalAssembly Remove="@(XamlCppWinRTLocalAssembly)" />
+    </ItemGroup>
+  </Target>
 </Project>
