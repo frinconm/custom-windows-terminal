@@ -581,6 +581,7 @@ namespace winrt::TerminalApp::implementation
         bool _ToggleSidebarCollapsed();
         void _SidebarActivatePane(const winrt::TerminalApp::Tab& tab, const uint32_t paneId);
         void _SidebarOpenTabIn(const winrt::hstring& directory);
+        void _SidebarClosePanes(const std::vector<std::pair<winrt::TerminalApp::Tab, uint32_t>>& panes);
         void _SidebarOnPaneInput(const std::wstring& sessionId);
         void _SidebarHookInput(const winrt::Microsoft::Terminal::Control::TermControl& control, const std::wstring& sessionId);
 #pragma endregion

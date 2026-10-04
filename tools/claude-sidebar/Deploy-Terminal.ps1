@@ -57,6 +57,19 @@ $sdkBin = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*" -Dir
 if (-not $sdkBin) { throw 'makeappx.exe not found (Windows SDK missing?)' }
 
 $loose = Join-Path $msix.Directory.Parent.FullName "loose-$Configuration"
+
+# The registered package runs straight out of $loose, so close it and
+# unregister it before replacing those files.
+$existing = Get-AppxPackage -Name 'WindowsTerminalDev*'
+if ($existing) {
+    Write-Host "Removing previous $($existing.PackageFullName) (closes Terminal Dev windows)"
+    Get-Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.Path -and $_.Path.StartsWith($existing.InstallLocation, [StringComparison]::OrdinalIgnoreCase) } |
+        Stop-Process -Force
+    Start-Sleep -Milliseconds 500
+    Remove-AppxPackage $existing.PackageFullName -PreserveApplicationData
+}
+
 if (Test-Path $loose) { Remove-Item $loose -Recurse -Force }
 & $sdkBin unpack /o /p $msix.FullName /d $loose | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "makeappx unpack failed ($LASTEXITCODE)" }
@@ -70,15 +83,6 @@ foreach ($dep in $deps) {
     } catch {
         # Already installed (same or newer version).
     }
-}
-
-$existing = Get-AppxPackage -Name 'WindowsTerminalDev*'
-if ($existing) {
-    Write-Host "Removing previous $($existing.PackageFullName)"
-    Get-Process WindowsTerminal -ErrorAction SilentlyContinue |
-        Where-Object { $_.Path -and $_.Path.StartsWith($existing.InstallLocation, [StringComparison]::OrdinalIgnoreCase) } |
-        Stop-Process -Force
-    Remove-AppxPackage $existing.PackageFullName -PreserveApplicationData
 }
 
 Add-AppxPackage -Register (Join-Path $loose 'AppxManifest.xml') -ForceUpdateFromAnyVersion -ForceApplicationShutdown

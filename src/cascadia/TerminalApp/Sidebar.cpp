@@ -378,7 +378,9 @@ namespace
                     {
                         continue;
                     }
-                    const auto task = value.as<JsonObject>();
+                    // Array elements are JsonValue instances, not JsonObject, so
+                    // as<JsonObject>() fails; GetObject() collides with a Win32 macro.
+                    const auto task = JsonObject::Parse(value.Stringify());
                     std::wstring type, description;
                     if (task.HasKey(L"type") && task.GetNamedValue(L"type").ValueType() == JsonValueType::String)
                     {
@@ -819,6 +821,52 @@ namespace winrt::TerminalApp::implementation
         _RefreshSidebar(true);
     }
 
+    // Closes the given panes. Tabs whose every pane is listed are closed as a
+    // whole, which asks for confirmation the same way closing a tab does.
+    void TerminalPage::_SidebarClosePanes(const std::vector<std::pair<winrt::TerminalApp::Tab, uint32_t>>& panes)
+    {
+        std::vector<winrt::TerminalApp::Tab> wholeTabs;
+        std::vector<std::pair<winrt::TerminalApp::Tab, std::vector<uint32_t>>> partialTabs;
+        for (const auto& [tab, unused] : panes)
+        {
+            const auto alreadySeen = std::any_of(wholeTabs.begin(), wholeTabs.end(), [&](const auto& t) { return t == tab; }) ||
+                                     std::any_of(partialTabs.begin(), partialTabs.end(), [&](const auto& p) { return p.first == tab; });
+            const auto tabImpl = _GetTabImpl(tab);
+            if (alreadySeen || !tabImpl)
+            {
+                continue;
+            }
+            std::vector<uint32_t> ids;
+            for (const auto& [otherTab, paneId] : panes)
+            {
+                if (otherTab == tab)
+                {
+                    ids.push_back(paneId);
+                }
+            }
+            if (ids.size() >= gsl::narrow_cast<size_t>(tabImpl->GetLeafPaneCount()))
+            {
+                wholeTabs.push_back(tab);
+            }
+            else
+            {
+                partialTabs.emplace_back(tab, std::move(ids));
+            }
+        }
+
+        for (auto& [tab, ids] : partialTabs)
+        {
+            if (const auto tabImpl = _GetTabImpl(tab))
+            {
+                _ClosePanes(tabImpl->get_weak(), std::move(ids));
+            }
+        }
+        if (!wholeTabs.empty())
+        {
+            _RemoveTabs(std::move(wholeTabs));
+        }
+    }
+
     void TerminalPage::_SidebarOpenTabIn(const winrt::hstring& directory)
     {
         NewTerminalArgs args;
@@ -1162,12 +1210,10 @@ namespace winrt::TerminalApp::implementation
                     winrt::Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(package);
                 });
             }
-            addItem(L"Close tab", L"\xE711", [weak, tab = winrt::make_weak(e.tab)](auto&&, auto&&) {
-                const auto page = weak.get();
-                const auto strongTab = tab.get();
-                if (page && strongTab)
+            addItem(L"Close", L"\xE711", [weak, tab = e.tab, paneId = e.paneId](auto&&, auto&&) {
+                if (const auto page = weak.get())
                 {
-                    page->_HandleCloseTabRequested(strongTab);
+                    page->_SidebarClosePanes({ { tab, paneId } });
                 }
             });
             return menu;
@@ -1355,18 +1401,41 @@ namespace winrt::TerminalApp::implementation
                     }
                     page->_RefreshSidebar(true);
                 });
-                if (!group.root.empty())
                 {
                     MenuFlyout menu;
-                    MenuFlyoutItem item;
-                    item.Text(L"New tab here");
-                    item.Click([weak, dir = winrt::hstring{ group.root }](auto&&, auto&&) {
+                    if (!group.root.empty())
+                    {
+                        MenuFlyoutItem item;
+                        item.Text(L"New tab here");
+                        item.Click([weak, dir = winrt::hstring{ group.root }](auto&&, auto&&) {
+                            if (const auto page = weak.get())
+                            {
+                                page->_SidebarOpenTabIn(dir);
+                            }
+                        });
+                        menu.Items().Append(item);
+                    }
+
+                    // A group only exists while terminals are open in it, so
+                    // removing a group means closing its terminals.
+                    std::vector<std::pair<winrt::TerminalApp::Tab, uint32_t>> panes;
+                    for (const auto& worktree : group.worktrees)
+                    {
+                        for (const auto i : worktree.entries)
+                        {
+                            panes.emplace_back(entries[i].tab, entries[i].paneId);
+                        }
+                    }
+                    MenuFlyoutItem close;
+                    close.Text(winrt::hstring{ paneCount == 1 ? std::wstring{ L"Close group (1 terminal)" } : fmt::format(FMT_COMPILE(L"Close group ({} terminals)"), paneCount) });
+                    close.Icon(_icon(L"\xE711", 14, palette.foreground));
+                    close.Click([weak, panes](auto&&, auto&&) {
                         if (const auto page = weak.get())
                         {
-                            page->_SidebarOpenTabIn(dir);
+                            page->_SidebarClosePanes(panes);
                         }
                     });
-                    menu.Items().Append(item);
+                    menu.Items().Append(close);
                     header.ContextFlyout(menu);
                 }
                 items.Children().Append(header);

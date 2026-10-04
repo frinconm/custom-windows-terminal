@@ -13,7 +13,9 @@ This fork replaces Windows Terminal's tab strip with a collapsible sidebar:
   - stopwatch badge: background tasks still running (shells, subagents, monitors); hover for the list
 - Collapse the sidebar to an icon rail with the ☰ button or `Ctrl+Shift+B` (`toggleSidebar` action).
 - Drag its right edge to resize it. Click a group to fold it. Right-click a terminal for
-  "New tab here", "Copy path" and "Close tab". The `+` on a worktree opens a new tab there.
+  "New tab here", "Copy path" and "Close". Right-click a group header for "New tab here" and
+  "Close group", which closes every terminal in it (a group only exists while terminals are
+  open in it). The `+` on a worktree opens a new tab there.
 - Set `"showTabsInSidebar": false` in settings.json to get the normal tab strip back.
 
 ## How the status gets there
