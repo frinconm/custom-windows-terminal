@@ -567,6 +567,24 @@ namespace winrt::TerminalApp::implementation
         void _activePaneChanged(winrt::TerminalApp::Tab tab, Windows::Foundation::IInspectable args);
         safe_void_coroutine _doHandleSuggestions(Microsoft::Terminal::Settings::Model::SuggestionsArgs realArgs);
 
+#pragma region Sidebar
+        // Vertical list of terminals grouped by git repository / worktree,
+        // with Claude Code session status. Defined in Sidebar.cpp.
+        struct SidebarState;
+        std::shared_ptr<SidebarState> _sidebar;
+
+        bool _SidebarEnabled() const;
+        void _InitializeSidebar();
+        void _UpdateSidebarVisibility();
+        void _SidebarUpdateTabStrip();
+        void _RefreshSidebar(const bool force);
+        bool _ToggleSidebarCollapsed();
+        void _SidebarActivatePane(const winrt::TerminalApp::Tab& tab, const uint32_t paneId);
+        void _SidebarOpenTabIn(const winrt::hstring& directory);
+        void _SidebarOnPaneInput(const std::wstring& sessionId);
+        void _SidebarHookInput(const winrt::Microsoft::Terminal::Control::TermControl& control, const std::wstring& sessionId);
+#pragma endregion
+
 #pragma region ActionHandlers
         // These are all defined in AppActionHandlers.cpp
 #define ON_ALL_ACTIONS(action) DECLARE_ACTION_HANDLER(action);

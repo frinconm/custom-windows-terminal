@@ -151,6 +151,10 @@ namespace winrt::TerminalApp::implementation
         });
 
         auto tabViewItem = newTabImpl->TabViewItem();
+        if (_SidebarEnabled())
+        {
+            tabViewItem.Visibility(Visibility::Collapsed);
+        }
         _tabView.TabItems().InsertAt(insertPosition, tabViewItem);
 
         // Set this tab's icon to the icon from the content
@@ -242,17 +246,31 @@ namespace winrt::TerminalApp::implementation
         // - we're not in focus mode
         // - we're not in full screen, or the user has enabled fullscreen tabs
         // - there is more than one tab, or the user has chosen to always show tabs
+        // When the sidebar is enabled, the tabs live there instead. The tab row
+        // is then only kept when it doubles as the titlebar (it hosts the new
+        // tab button and the drag region).
+        const auto sidebar = _SidebarEnabled();
         const auto isVisible = !_isInFocusMode &&
                                (!_isFullscreen || _showTabsFullscreen) &&
                                (_settings.GlobalSettings().ShowTabsInTitlebar() ||
-                                (_tabs.Size() > 1) ||
-                                _settings.GlobalSettings().AlwaysShowTabs());
+                                (!sidebar && ((_tabs.Size() > 1) || _settings.GlobalSettings().AlwaysShowTabs())));
 
         if (_tabView)
         {
             // collapse/show the tabs themselves
             _tabView.Visibility(isVisible ? Visibility::Visible : Visibility::Collapsed);
+
+            for (const auto& tab : _tabs)
+            {
+                if (const auto item = tab.TabViewItem())
+                {
+                    item.Visibility(sidebar ? Visibility::Collapsed : Visibility::Visible);
+                }
+            }
         }
+
+        _SidebarUpdateTabStrip();
+        _UpdateSidebarVisibility();
         if (_tabRow)
         {
             // collapse/show the row that the tabs are in.

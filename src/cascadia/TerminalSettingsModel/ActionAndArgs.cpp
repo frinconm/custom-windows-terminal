@@ -55,6 +55,7 @@ static constexpr std::string_view ToggleAlwaysOnTopKey{ "toggleAlwaysOnTop" };
 static constexpr std::string_view ToggleCommandPaletteKey{ "commandPalette" };
 static constexpr std::string_view SuggestionsKey{ "showSuggestions" };
 static constexpr std::string_view ToggleFocusModeKey{ "toggleFocusMode" };
+static constexpr std::string_view ToggleSidebarKey{ "toggleSidebar" };
 static constexpr std::string_view SetFocusModeKey{ "setFocusMode" };
 static constexpr std::string_view ToggleFullscreenKey{ "toggleFullscreen" };
 static constexpr std::string_view SetFullScreenKey{ "setFullScreen" };

@@ -462,6 +462,10 @@
   <data name="ToggleCommandPaletteCommandLineModeCommandKey" xml:space="preserve">
     <value>Toggle command palette in command line mode</value>
   </data>
+  <data name="ToggleSidebarCommandKey" xml:space="preserve">
+    <value>Toggle sidebar</value>
+    <comment>The sidebar is the vertical list of terminals, grouped by git repository and worktree</comment>
+  </data>
   <data name="ToggleFocusModeCommandKey" xml:space="preserve">
     <value>Toggle focus mode</value>
     <comment>"Focus mode" is a mode with minimal UI elements, for a distraction-free experience</comment>

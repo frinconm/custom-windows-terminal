@@ -157,6 +157,7 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
                 { ShortcutAction::ToggleBroadcastInput, USES_RESOURCE(L"ToggleBroadcastInputCommandKey") },
                 { ShortcutAction::ToggleCommandPalette, USES_RESOURCE(L"ToggleCommandPaletteCommandKey") },
                 { ShortcutAction::ToggleFocusMode, USES_RESOURCE(L"ToggleFocusModeCommandKey") },
+                { ShortcutAction::ToggleSidebar, USES_RESOURCE(L"ToggleSidebarCommandKey") },
                 { ShortcutAction::ToggleFullscreen, USES_RESOURCE(L"ToggleFullscreenCommandKey") },
                 { ShortcutAction::TogglePaneReadOnly, USES_RESOURCE(L"TogglePaneReadOnlyCommandKey") },
                 { ShortcutAction::TogglePaneZoom, USES_RESOURCE(L"TogglePaneZoomCommandKey") },

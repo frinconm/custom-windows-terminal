@@ -42,13 +42,102 @@
             </mux:InfoBar>
         </StackPanel>
 
-        <Grid x:Name="TabContent"
+        <!--
+            The sidebar replaces the tab strip: a vertical list of terminals
+            grouped by git repository and worktree. Its contents are built in
+            Sidebar.cpp. The TabView still exists (and owns tab selection), its
+            items are just collapsed while the sidebar is enabled.
+        -->
+        <Grid x:Name="ContentRoot"
               Grid.Row="2"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
-            <Grid.Background>
-                <ImageBrush />
-            </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="SidebarRoot"
+                  Grid.Column="0"
+                  Width="260"
+                  Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="SidebarHeader"
+                      Grid.Row="0"
+                      Height="36"
+                      Padding="4,0,4,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <!--  E700 is the "GlobalNavigationButton" (hamburger) glyph  -->
+                    <Button x:Name="SidebarToggleButton"
+                            Grid.Column="0"
+                            Width="36"
+                            Height="30"
+                            Padding="0"
+                            AutomationProperties.Name="Toggle sidebar"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ToolTipService.ToolTip="Toggle sidebar (Ctrl+Shift+B)">
+                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                  FontSize="14"
+                                  Glyph="&#xE700;" />
+                    </Button>
+                    <TextBlock x:Name="SidebarTitle"
+                               Grid.Column="1"
+                               Margin="6,0,0,0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Opacity="0.8"
+                               Text="TERMINALS" />
+                    <!--  E710 is the "Add" glyph  -->
+                    <Button x:Name="SidebarNewTabButton"
+                            Grid.Column="2"
+                            Width="32"
+                            Height="30"
+                            Padding="0"
+                            AutomationProperties.Name="New tab"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ToolTipService.ToolTip="New tab">
+                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                  FontSize="12"
+                                  Glyph="&#xE710;" />
+                    </Button>
+                </Grid>
+
+                <ScrollViewer x:Name="SidebarScroller"
+                              Grid.Row="1"
+                              HorizontalScrollBarVisibility="Disabled"
+                              HorizontalScrollMode="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="SidebarItems"
+                                Padding="4,0,4,8" />
+                </ScrollViewer>
+
+                <!--  Drag handle to resize the sidebar  -->
+                <Border x:Name="SidebarResizeHandle"
+                        Grid.RowSpan="2"
+                        Width="5"
+                        HorizontalAlignment="Right"
+                        Background="Transparent" />
+            </Grid>
+
+            <Grid x:Name="TabContent"
+                  Grid.Column="1"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+                <Grid.Background>
+                    <ImageBrush />
+                </Grid.Background>
+            </Grid>
         </Grid>
 
         <!--

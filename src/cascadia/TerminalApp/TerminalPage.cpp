@@ -443,6 +443,8 @@ namespace winrt::TerminalApp::implementation
 
         _tabRow.ShowElevationShield(IsRunningElevated() && _settings.GlobalSettings().ShowAdminShield());
 
+        _InitializeSidebar();
+
         _adjustProcessPriorityThrottled = std::make_shared<ThrottledFunc<>>(
             DispatcherQueue::GetForCurrentThread(),
             til::throttled_func_options{
@@ -3969,6 +3971,10 @@ namespace winrt::TerminalApp::implementation
 
         _updateAllTabCloseButtons();
 
+        // The user may have toggled "showTabsInSidebar".
+        _UpdateTabView();
+        _RefreshSidebar(true);
+
         // The user may have changed the "show title in titlebar" setting.
         TitleChanged.raise(*this, nullptr);
     }
@@ -4997,6 +5003,9 @@ namespace winrt::TerminalApp::implementation
             // use that as an indication to use the default window frame.
             FrameBrush(nullptr);
         }
+
+        // The sidebar uses the titlebar brush, and highlights the focused tab/pane.
+        _RefreshSidebar(true);
     }
 
     // Function Description:

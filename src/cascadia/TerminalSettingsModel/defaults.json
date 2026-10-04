@@ -517,6 +517,7 @@
         { "command": "closeWindow", "id": "Terminal.CloseWindow" },
         { "command": "toggleFullscreen", "id": "Terminal.ToggleFullscreen" },
         { "command": "toggleFocusMode", "id": "Terminal.ToggleFocusMode" },
+        { "command": "toggleSidebar", "id": "Terminal.ToggleSidebar" },
         { "command": "toggleAlwaysOnTop", "id": "Terminal.ToggleAlwaysOnTop" },
         { "command": "openNewTabDropdown", "id": "Terminal.OpenNewTabDropdown" },
         { "command": { "action": "openSettings", "target": "settingsUI" }, "id": "Terminal.OpenSettingsUI" },
@@ -722,6 +723,7 @@
         // Application-level Keys
         { "keys": "alt+f4", "id": "Terminal.CloseWindow" },
         { "keys": "alt+enter", "id": "Terminal.ToggleFullscreen" },
+        { "keys": "ctrl+shift+b", "id": "Terminal.ToggleSidebar" },
         { "keys": "f11", "id": "Terminal.ToggleFullscreen" },
         { "keys": "ctrl+shift+space", "id": "Terminal.OpenNewTabDropdown" },
         { "keys": "ctrl+,", "id": "Terminal.OpenSettingsUI" },

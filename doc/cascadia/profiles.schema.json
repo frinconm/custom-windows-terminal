@@ -472,6 +472,7 @@
         "toggleAlwaysOnTop",
         "toggleBlockSelection",
         "toggleFocusMode",
+        "toggleSidebar",
         "toggleFullscreen",
         "togglePaneZoom",
         "toggleReadOnlyMode",
@@ -2563,6 +2564,11 @@
         "showAdminShield": {
           "default": true,
           "description": "When set to true, the Terminal's tab row will display a shield icon when the Terminal is running with administrator privileges",
+          "type": "boolean"
+        },
+        "showTabsInSidebar": {
+          "default": true,
+          "description": "When set to true, tabs are listed in a collapsible sidebar, grouped by git repository and worktree, instead of the tab strip.",
           "type": "boolean"
         },
         "showTabsFullscreen": {

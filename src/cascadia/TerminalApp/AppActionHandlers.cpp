@@ -604,6 +604,12 @@ namespace winrt::TerminalApp::implementation
         args.Handled(true);
     }
 
+    void TerminalPage::_HandleToggleSidebar(const IInspectable& /*sender*/,
+                                            const ActionEventArgs& args)
+    {
+        args.Handled(_ToggleSidebarCollapsed());
+    }
+
     void TerminalPage::_HandleSetFocusMode(const IInspectable& /*sender*/,
                                            const ActionEventArgs& args)
     {
